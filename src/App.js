@@ -269,6 +269,7 @@ class ButtonInput extends React.Component {
 function App() {
   return (
     <div>
+      <h1>Hi there!</h1>
       <Calculator />
     </div>
   );
