@@ -245,7 +245,7 @@ class ButtonInput extends React.Component {
               <a href='#' id='3' onClick={() => this.props.handleNumChange('3')} className='btn btn-default'>3</a>
             </div>
             <div className='btn-group btn-group-justified'>
-              <a href="#" id='clear' onClick={this.props.clearPreview} className='btn btn-default'>Clear</a>
+              <a href="#" id='clear' onClick={this.props.clearPreview} className='btn btn-default'>Clear (Esc) </a>
               <a href='#' id='0' onClick={() => this.props.handleNumChange('0')} className='btn btn-default'>0</a>
               <a href='#' id='.' onClick={() => this.props.handleDecChange('.')} className='btn btn-default'>.</a>
             </div>
@@ -259,7 +259,7 @@ class ButtonInput extends React.Component {
             </div>
           </div>
           <div className='col-xs-2'>
-            <button id='total' onClick={this.props.showTotal} className='btn btn-default btn-block'>=</button>
+            <button id='total' onClick={this.props.showTotal} className='btn btn-default btn-block'>= (Enter)</button>
           </div>
         </div>
     )
