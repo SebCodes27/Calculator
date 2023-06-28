@@ -1,6 +1,7 @@
 import './index.css';
+import './App.css';
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+/* import ReactDOM from 'react-dom/client';*/
 
 class Calculator extends React.Component {
   constructor(props) {
@@ -8,12 +9,9 @@ class Calculator extends React.Component {
     this.state = {
       text: '',
       operator: '',
-      finalOutcome: '',
       newInt: '',
       prevTotal: 0,
-      newVal: 0,
       firstOp: 'no',
-      currOp: '',
       totaled: 'no'
     }
     this.handleNumChange = this.handleNumChange.bind(this);
@@ -23,10 +21,10 @@ class Calculator extends React.Component {
     this.showTotal = this.showTotal.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
   }
-  componentDidMount() {
-    document.addEventListener("keydown", this.handleKeyPress);
+  componentDidMount() { // sets the event listener for key inputs
+    document.addEventListener("keydown", this.handleKeyPress); 
   }
-  handleKeyPress(event) {
+  handleKeyPress(event) { // handles key inputs, including 'enter', 'escape', and operations and numbers which are identified by id
     let clicked = document.getElementById(event.key);
     if (event.key === 'Enter') {
       let clicked = document.getElementById('total');
@@ -36,30 +34,23 @@ class Calculator extends React.Component {
       let clicked = document.getElementById('clear');
       clicked.click();
     }
-    if (clicked === null) {
+    if (clicked === null) { // prevents any reaction from keys not included or paired to an id
       return;
     };
     
     clicked.click();
     
   }
-  handleNumChange(num) {
-    if (this.state.totaled === 'yes') {
-      console.log('yes')
+  handleNumChange(num) { // handles number inputs
+    if (this.state.totaled === 'yes') { // prevents new values being concatenated to a total
       return;
     }
-    let newText = this.state.text + num; // sets up the window preview
+    let newText = this.state.text + num; // prepares the window preview
     let newVal = 0;
     let lastVal = this.state.text[this.state.text.length - 1];
     let strPrevTotal = this.state.prevTotal.toString() + num;
-    /* if (this.state.text.length === 0) {
-      this.setState({
-        prevTotal: numInt
-      });
-    } */
-    if (this.state.firstOp === 'no') {
+    if (this.state.firstOp === 'no') { // handles the inclusion of decimals in the first input value, i.e '1.05 x 3'
       if (num === '0') {
-        console.log('hi')
         this.setState({
           prevTotal: strPrevTotal
         })
@@ -69,101 +60,124 @@ class Calculator extends React.Component {
         })
     }
   }
-    if (lastVal !== '+' && lastVal !== '-' && lastVal !== 'x' && lastVal !== '÷') {
+    if (lastVal !== '+' && lastVal !== '-' && lastVal !== 'x' && lastVal !== '÷') { // concatenates, rather than operates, new values, '3' + '3' = 33
       newVal += (this.state.newInt).toString() + num;
     } else {
       newVal += num;
     }
     let parseNewVal = parseFloat(newVal);
-    this.setState({
+    if (num === '0') { // handles the inclusion of decimals in the second input value
+      parseNewVal = newVal
+    }
+    this.setState({ // sets the window preview and the second value for operating
       newInt: parseNewVal,
       text: newText
-    }) // confirms the preview, sets up 'prev' value, resets the operator
-    // if the previous newInt is a digit, concatenate this with the new value
-    // parse it to an integer
-    // set this integer to the newInt to be operated with
+    })
   }
-  handleDecChange(dec) {
-    if (this.state.totaled === 'yes') {
+  handleDecChange(dec) { // handles the decimal input
+    if (this.state.totaled === 'yes') { // prevents decimal point being concatenated to a total
       return;
     }
-    let newText = this.state.text + dec; // sets up the window preview
+    let newText = this.state.text + dec; // prepares the window preview
     let newVal = 0;
     let lastVal = this.state.text[this.state.text.length - 1];
     let strPrevTotal = this.state.prevTotal.toString() + dec;
-    if (this.state.firstOp === 'no') {
+    if (this.state.firstOp === 'no') { // handles the inclusion of decimals in the first input value, i.e '1.05 x 3'
       this.setState({
         prevTotal: strPrevTotal
       })
     }
-    if (lastVal !== '+' && lastVal !== '-' && lastVal !== 'x' && lastVal !== '÷' && lastVal !== '.') {
+    if (lastVal !== '+' && lastVal !== '-' && lastVal !== 'x' && lastVal !== '÷' && lastVal !== '.') { // makes certain decimal point is never repeated
       newVal += (this.state.newInt).toString() + dec;
     } else if (lastVal === '.') {
       return
     } else {
       newVal += '0' + dec;
     }
-    this.setState({
+    this.setState({ // sets window preview and second value for operating
       text: newText,
       newInt: newVal,
     });
   }
-  handleOpChange(sym, operator) {
+  handleOpChange(sym, operator) { // handles operations
     let lastVal = this.state.text[this.state.text.length - 1];
-    if (lastVal === '+' || lastVal === "-" || lastVal === 'x' || lastVal === '÷') {
+    if (lastVal === '+' || lastVal === "-" || lastVal === 'x' || lastVal === '÷') { // prevents double use of operations
       return
     }
     let newText = this.state.text + sym; // sets up the preview
     let currOp = this.state.operator;
-    this.setState({
+    if (this.state.totaled === 'yes') {
+      currOp = ''
+    }
+    this.setState({ // sets window preview, operator value, true or false of first operation, and true or false of a previous total existing
       text: newText,
       operator: operator,
       firstOp: 'yes',
       totaled: 'no'
     });
     let prevTotal = 0;
-    if (currOp === 'plus') {
+    let length = 0;
+    if (this.state.prevTotal.toString().length > this.state.newInt.toString().length) { // sets the correct number of decimal places
+      let ind = this.state.prevTotal
+      .toString()
+      .indexOf('.');
+      length = this.state.prevTotal.toString().length - ind - 1
+    } else {
+      let ind = this.state.newInt
+      .toString()
+      .indexOf('.');
+      length = this.state.newInt.toString().length - ind - 1
+    };
+    if (currOp === 'plus') { // adding operation
         prevTotal = this.state.prevTotal + this.state.newInt
       };
-    if (currOp === 'minus') {
+    if (currOp === 'minus') { // subtracting operation
         prevTotal = this.state.prevTotal - this.state.newInt
     }
-    if (currOp === 'multiply') {
+    if (currOp === 'multiply') { // multiplying operation
         prevTotal = this.state.prevTotal * this.state.newInt
     }
-    if (currOp === 'divide') {
+    if (currOp === 'divide') { // dividing operation
         prevTotal = this.state.prevTotal / this.state.newInt
     }
-    if (currOp !== '') {
+    if (/\./.test(prevTotal) === true) {
+      prevTotal = prevTotal.toFixed(length);
+    }
+    if (currOp !== '') { // sets outcome, for display or next operation
       this.setState({
         prevTotal: prevTotal
       })
     }
-    // commence the previous operation, with values 'prevTotal' and 'newInt'
-    // set new 'prevTotal'
-    // set new operator
-
-    
   }
 
-  clearPreview() {
+  clearPreview() { // resets all values
     this.setState({
       text: 0,
       prev: '',
       operator: '',
-      finalOutcome: '',
       newInt: '',
       prevTotal: 0,
-      newVal: 0,
       firstOp: 'no',
       totaled: 'no'
     });
   }
 
-  showTotal() {
+  showTotal() { // handles operations and displays the outcome
     let currOp = this.state.operator;
     let prevTotal = 0;
     let text = 0;
+    let length = 0;
+    if (this.state.prevTotal.toString().length > this.state.newInt.toString().length) { // sets the correct number of decimal places
+      let ind = this.state.prevTotal
+      .toString()
+      .indexOf('.');
+      length = this.state.prevTotal.toString().length - ind - 1
+    } else {
+      let ind = this.state.newInt
+      .toString()
+      .indexOf('.');
+      length = this.state.newInt.toString().length - ind - 1
+    };
     if (currOp === 'plus') {
       prevTotal = this.state.prevTotal + this.state.newInt;
       text = this.state.prevTotal + this.state.newInt;
@@ -181,31 +195,28 @@ class Calculator extends React.Component {
       text = this.state.prevTotal / this.state.newInt;
     }
     if (/\./.test(prevTotal) === true) {
-      text = text.toFixed(2);
+      text = text.toFixed(length);
     }
     this.setState({
       prevTotal: prevTotal,
       text: text,
-      operator: '',
       totaled: 'yes'
     })
   }
 
   render () {
   return (
-    <div id='calculator' className='container-fluid'>
-      <div className='row jumbotron'>
-        <div className='col-xs-1'>
-          <p>hi</p>
-        </div>
-        <div id="container" className='col-xs-10'>
+    <div id='calculator' className='container-fluid outerBox'>
+
+      <h1 id='title' className='text-lg'>Quick Calculator</h1>
+
+      <div id="container" className='innerBox well center'>
+
         <TextDisplay text={this.state.text}/>
         <ButtonInput text={this.state.text} handleNumChange={this.handleNumChange} handleDecChange={this.handleDecChange} handleOpChange={this.handleOpChange} clearPreview={this.clearPreview} showTotal={this.showTotal}/>
-        </div>
-        <div className='col-xs-1'>
-          <p>hi</p>
-        </div>
+      
       </div>
+
     </div>
   )
 }};
@@ -216,8 +227,10 @@ class TextDisplay extends React.Component {
   }
   render () {
     return (
-          <div>
+          <div className='textBox'>
+
             <textarea value={this.props.text} className='form-control' />
+
           </div>
     )}};
 
@@ -227,41 +240,66 @@ class ButtonInput extends React.Component {
   }
   render () {
     return (
-        <div id="buttonBox">
-          <div className='col-xs-9'>
-            <div className='btn-group btn-group-justified'>
-              <a href="#" id='7' onClick={() => this.props.handleNumChange('7')} className='btn btn-default'>7</a>
-              <a href='#' id='8' onClick={() => this.props.handleNumChange('8')} className='btn btn-default'>8</a>
-              <a href='#' id='9' onClick={() => this.props.handleNumChange('9')} className='btn btn-default'>9</a>
-            </div>
-            <div className='btn-group btn-group-justified'>
-              <a href='#' id='4' onClick={() => this.props.handleNumChange('4')} className='btn btn-default'>4</a>
-              <a href='#' id='5' onClick={() => this.props.handleNumChange('5')} className='btn btn-default'>5</a>
-              <a href='#' id='6' onClick={() => this.props.handleNumChange('6')} className='btn btn-default'>6</a>
-            </div>
-            <div className='btn-group btn-group-justified'>
-              <a href='#' id='1' onClick={() => this.props.handleNumChange('1')} className='btn btn-default'>1</a>
-              <a href='#' id='2' onClick={() => this.props.handleNumChange('2')} className='btn btn-default'>2</a>
-              <a href='#' id='3' onClick={() => this.props.handleNumChange('3')} className='btn btn-default'>3</a>
-            </div>
-            <div className='btn-group btn-group-justified'>
-              <a href="#" id='clear' onClick={this.props.clearPreview} className='btn btn-default'>Clear (Esc) </a>
-              <a href='#' id='0' onClick={() => this.props.handleNumChange('0')} className='btn btn-default'>0</a>
-              <a href='#' id='.' onClick={() => this.props.handleDecChange('.')} className='btn btn-default'>.</a>
-            </div>
+
+      <div className='container-fluid well buttonBox'>
+
+        <div className='col-xs-8'>
+
+          <div className='btn-group'>
+
+            <button id='7' onClick={() => this.props.handleNumChange('7')} className='btn btn-default btn-width'>7</button>
+            <button id='8' onClick={() => this.props.handleNumChange('8')} className='btn btn-default btn-width'>8</button>
+            <button id='9' onClick={() => this.props.handleNumChange('9')} className='btn btn-default btn-width'>9</button>
+          
           </div>
-          <div className='col-xs-1'>
-            <div className='btn-group btn-group-vertical'>
-              <a href='#' id='/' onClick={() => this.props.handleOpChange('÷', 'divide')} className='btn btn-default'>÷</a>
-              <a href='#' id='x' onClick={() => this.props.handleOpChange('x', 'multiply')} className='btn btn-default'>×</a>
-              <a href='#' id='-' onClick={() => this.props.handleOpChange('-', 'minus')} className='btn btn-default'>–</a>
-              <a href='#' id='+' onClick={() => this.props.handleOpChange('+', 'plus')} className='btn btn-default'>+</a>
-            </div>
+
+          <div className='btn-group'>
+
+            <button id='4' onClick={() => this.props.handleNumChange('4')} className='btn btn-default btn-width'>4</button>
+            <button id='5' onClick={() => this.props.handleNumChange('5')} className='btn btn-default btn-width'>5</button>
+            <button id='6' onClick={() => this.props.handleNumChange('6')} className='btn btn-default btn-width'>6</button>
+          
           </div>
-          <div className='col-xs-2'>
-            <button id='total' onClick={this.props.showTotal} className='btn btn-default btn-block'>= (Enter)</button>
+
+          <div className='btn-group'>
+
+            <button id='1' onClick={() => this.props.handleNumChange('1')} className='btn btn-default btn-width'>1</button>
+            <button id='2' onClick={() => this.props.handleNumChange('2')} className='btn btn-default btn-width'>2</button>
+            <button id='3' onClick={() => this.props.handleNumChange('3')} className='btn btn-default btn-width'>3</button>
+          
           </div>
+
+          <div className='btn-group'>
+
+            <button id='clear' onClick={this.props.clearPreview} className='btn btn-default btn-width'>Clear (Esc) </button>
+            <button id='0' onClick={() => this.props.handleNumChange('0')} className='btn btn-default btn-width'>0</button>
+            <button id='.' onClick={() => this.props.handleDecChange('.')} className='btn btn-default btn-width'>.</button>
+          
+          </div>
+
         </div>
+
+        <div className='col-xs-2'>
+
+          <div className='btn-group btn-group-vertical'>
+
+            <button id='/' onClick={() => this.props.handleOpChange('÷', 'divide')} className='btn btn-default'>÷</button>
+            <button id='x' onClick={() => this.props.handleOpChange('x', 'multiply')} className='btn btn-default'>×</button>
+            <button id='-' onClick={() => this.props.handleOpChange('-', 'minus')} className='btn btn-default'>–</button>
+            <button id='+' onClick={() => this.props.handleOpChange('+', 'plus')} className='btn btn-default'>+</button>
+        
+          </div>
+
+        </div>
+
+        <div className='col-xs-2'>
+
+          <button id='total' onClick={this.props.showTotal} className='btn btn-default btn-block btn-height-tall'>= (Enter)</button>
+        
+        </div>
+
+      </div>
+
     )
     }};
         

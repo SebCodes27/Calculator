@@ -1,0 +1,52 @@
+.outerBox {
+    width: 100%;
+    height: 100vh;
+    border: solid 3px black;
+    background-color: darkblue;
+    color: white;
+}
+
+.innerBox {
+    border: solid 3px lightcoral;
+    background-color: orange;
+}
+
+.center {
+    width: 50%;
+    margin: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%)
+  }
+
+  .btn-width {
+    width: 120px;
+  }
+
+  .btn-height-tall {
+    height: 132px;
+  }
+
+#total {
+    position: absolute;
+}
+
+.btn-group {
+    width: 100%;
+}
+
+.text-lg {
+    font-size: 3em;
+}
+
+#title {
+    text-align: center;
+    position: relative;
+    margin: auto;
+    padding-top: 180px;
+}
+
+.form-control {
+    font-size: 1.5em;
+}
