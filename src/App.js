@@ -1,6 +1,7 @@
 import './index.css';
 import './App.css';
 import React from 'react';
+/* import ReactDOM from 'react-dom/client';*/ 
 class Calculator extends React.Component {
   constructor(props) {
     super(props);
